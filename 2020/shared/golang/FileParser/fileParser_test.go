@@ -6,6 +6,14 @@ import (
 	"reflect"
 )
 
+func TestLinereader(t *testing.T) {
+	lines := Linereader("test.txt")
+	want := 3
+	if got := len(lines); want != got {
+		t.Errorf("Linereader(test.txt) = %q, want %q",got,want)
+	}
+}
+
 func TestDay2Regexp(t *testing.T) {
 	day2LineFormat := "^([0-9]+)-([0-9]+) ([a-zA-Z]{1}): (.+)$"
 	sampleLine := "1-3 a: abcde"

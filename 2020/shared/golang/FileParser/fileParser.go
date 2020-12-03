@@ -44,6 +44,10 @@ func linereader(filename string) []string {
 	return lines
 }
 
+func Linereader(filename string) []string {
+	return linereader(filename)
+}
+
 func day2parseline(line string) Day2line {
 	day2LineFormat := "^([0-9]+)-([0-9]+) ([a-zA-Z]{1}): (.+)$"
 	r, err := regexp.Compile(day2LineFormat)
