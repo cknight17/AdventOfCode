@@ -5,8 +5,8 @@ import (
 	"aoc.knighttechnology.net/fileParser"
 	"fmt"
 )
-
 func main() { 
+
 	file:="day2a.txt"
 	output := fileParser.Day2input(file)
 	counter := verify.VerifyAllCount(output)
