@@ -12,3 +12,9 @@ func TestStuff(t *testing.T) {
 		t.Error("stuff",got,want)
 	}
 }
+
+func TestReadGroups(t *testing.T) {
+	file := ReadFile("test.txt")
+	
+	
+}
