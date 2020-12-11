@@ -10,29 +10,41 @@ import (
 )
 
 func main() {
+	// 284 too high
 	blocks := ReadFile("prod.txt")
 	language := GetReplacement(blocks[0])
 	input := blocks[1]
 	repls := ReplacementSets(input,language)
 	fmt.Println(repls)
 	fmt.Println(len(repls))
+	tokens := MassageInput(blocks[1])
+	fmt.Println(tokens)
+	fmt.Println(CalcTokens(tokens))
+	// total := 0
+	// singles, count := SolveMultiples(tokens)
+	// total += count
+	// singles, count = SolveSingleFunc(singles)
+	// total += count
+	// singles, count = SolveMultiples(singles)
+	// total += count
+	// singles, count = SolveSingleFunc(singles)
+	// total += count
+	// singles, count = SolveMultiples(singles)
+	// total += count
+	// singles, count = SolveDoubleFunc(singles)
+	// total += count
+	// singles, count = SolveMultiples(singles)
+	// total += count
+	// singles, count = SolveDoubleFunc(singles)
+	// total += count
+	// singles, count = SolveSingleFunc(singles)
+	// total += count
+	// singles, count = SolveMultiples(singles)
+	// total += count
+	// fmt.Println(singles,total)
 	// 510 too low
 	// 518
-	input2 := []string{"e"}
-	target := blocks[1]
-	i := 0
-	for {
-		var found bool
-		i++
-		input2 = ReplacementSetsSets(input2,language)
-		input2, found = Filter(input2,target)
-		if found {
-			break
-		} else {
-			fmt.Println(i, " NOT FOUND ",len(input2))
-		}
-	}
-	fmt.Println(input,target,len(input2))
+	
 	// 9 wrong
 }
 
@@ -55,6 +67,7 @@ func GetReplacement(input string) []Replacement {
 	replacements := make([]Replacement,0)
 	rows := strings.Split(input,"\n")
 	for _, row := range rows {
+		fmt.Println(row)
 		match := r.FindStringSubmatch(row)
 		replacements = append(replacements,Replacement{ from: match[1], to: match[2] })
 	}
@@ -95,7 +108,7 @@ func Filter(inputs []string, target string) ([]string, bool) {
 	for _, item := range inputs {
 		if item == target {
 			return []string{item}, true
-		} else if len(item) < len(target) {
+		} else if len(item) > len(target) {
 			filtered = append(filtered,item)
 		}
 	}
@@ -146,15 +159,84 @@ func Diff(input string, target string) (string,string) {
 	return "",""
 }
 
-func LookupReplacements(r []Replacement) map[string][]int {
-	lm := make(map[string]int,0)
-	for index, item := range r {
-		l, ok := lm[item.from]
-		if ok {
-			lm[item.from] = append(lm[item.from],l)
-		} else {
-			lm[item.from] = []int{l}
+type Token struct {
+	value string
+	terminal bool
+}
+
+func Tokenize(input string) []string {
+	regStr := `[A-Z][a-z]+`
+	r := regexp.MustCompile(regStr)
+	return r.FindAllString(input,-1)
+}
+
+func CalcTokens(input string) int {
+	numchars := len(input)
+	pcount := 0
+	ccount := 0
+	for _, value := range input {
+		if value == '(' || value == ')' {
+			pcount++
+		} else if value == ',' {
+			ccount++
 		}
 	}
-	return lm
+	return numchars - pcount - (2*ccount) - 1
+
 }
+
+func SolveMultiples(input string) (string, int) {
+	regStr := `X{2,}`
+	accumulator := 0
+	r := regexp.MustCompile(regStr)
+	matches := r.FindAllString(input,-1)
+	for _, value := range matches {
+		accumulator += len(value) - 1
+	}
+	return r.ReplaceAllString(input,"X"), accumulator
+}
+
+func SolveSingleFunc(input string) (string,int) {
+	regStr := `X\(X\)`
+	accumulator := 0
+	r := regexp.MustCompile(regStr)
+	matches := r.FindAllString(input,-1)
+	for _, value := range matches {
+		accumulator += len(value) - 1
+	}
+	return r.ReplaceAllString(input,"X"), accumulator
+}
+
+func SolveDoubleFunc(input string) (string,int) {
+	regStr := `X\(X\,X\)`
+	accumulator := 0
+	r := regexp.MustCompile(regStr)
+	matches := r.FindAllString(input,-1)
+	for _, value := range matches {
+		accumulator += len(value) - 1
+	}
+	return r.ReplaceAllString(input,"X"), accumulator
+}
+
+func MassageInput(input string) string {
+	regStr := `[A-Z][a-z]*`
+	input = strings.Replace(input,"Rn",`(`,-1)
+	input = strings.Replace(input,"Y",",",-1)
+	input = strings.Replace(input,"Ar",`)`,-1)
+	r := regexp.MustCompile(regStr)
+	input = r.ReplaceAllString(input,"X")
+	return input
+}
+
+// func LookupReplacements(r []Replacement) map[string][]int {
+// 	lm := make(map[string][]int,0)
+// 	for index, item := range r {
+// 		l, ok := lm[item.from]
+// 		if ok {
+// 			lm[item.from] = append(lm[item.from],l)
+// 		} else {
+// 			lm[item.from] = []int{l}
+// 		}
+// 	}
+// 	return lm
+// }
